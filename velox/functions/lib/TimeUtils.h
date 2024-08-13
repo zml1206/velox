@@ -17,6 +17,8 @@
 
 #include <velox/type/Timestamp.h>
 #include "velox/core/QueryConfig.h"
+#include "velox/external/date/date.h"
+#include "velox/external/date/iso_week.h"
 #include "velox/functions/Macros.h"
 #include "velox/type/tz/TimeZoneMap.h"
 
@@ -92,42 +94,16 @@ FOLLY_ALWAYS_INLINE int32_t getDayOfYear(const std::tm& time) {
   return time.tm_yday + 1;
 }
 
-FOLLY_ALWAYS_INLINE int getWeek(const std::tm& time) {
-  // The computation of ISO week from date follows the algorithm here:
-  // https://en.wikipedia.org/wiki/ISO_week_date
-  int week = floor(
-                     10 + (time.tm_yday + 1) -
-                     (time.tm_wday ? time.tm_wday : kDaysInWeek)) /
-      kDaysInWeek;
-
-  if (week == 0) {
-    // Distance in days between the first day of the current year and the
-    // Monday of the current week.
-    auto mondayOfWeek =
-        time.tm_yday + 1 - (time.tm_wday + kDaysInWeek - 1) % kDaysInWeek;
-    // Distance in days between the first day and the first Monday of the
-    // current year.
-    auto firstMondayOfYear =
-        1 + (mondayOfWeek + kDaysInWeek - 1) % kDaysInWeek;
-
-    if ((util::isLeapYear(time.tm_year + 1900 - 1) &&
-         firstMondayOfYear == 3) ||
-        firstMondayOfYear == 4) {
-      week = 53;
-    } else {
-      week = 52;
-    }
-  } else if (week == 53) {
-    // Distance in days between the first day of the current year and the
-    // Monday of the current week.
-    auto mondayOfWeek =
-        time.tm_yday + 1 - (time.tm_wday + kDaysInWeek - 1) % kDaysInWeek;
-    auto daysInYear = util::isLeapYear(time.tm_year + 1900) ? 366 : 365;
-    if (daysInYear - mondayOfWeek < 3) {
-      week = 1;
-    }
+FOLLY_ALWAYS_INLINE int getWeek(const Timestamp& timestamp, const tz::TimeZone* timezone) {
+  Timestamp t = timestamp;
+  if (timezone != nullptr) {
+    t.toTimezone(*timezone);
   }
-  return week;
+  const auto timePoint = t.toTimePointMs(false);
+  const auto daysTimePoint = date::floor<date::days>(timePoint);
+  const date::year_month_day calDate(daysTimePoint);
+  auto weekNum = date::iso_week::year_weeknum_weekday{calDate}.weeknum();
+  return unsigned(weekNum);
 }
 
 template <typename T>

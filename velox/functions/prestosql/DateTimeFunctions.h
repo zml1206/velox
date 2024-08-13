@@ -199,18 +199,18 @@ struct WeekFunction : public InitSessionTimezone<T>,
   FOLLY_ALWAYS_INLINE void call(
       int64_t& result,
       const arg_type<Timestamp>& timestamp) {
-    result = getWeek(getDateTime(timestamp, this->timeZone_));
+    result = getWeek(timestamp, this->timeZone_);
   }
 
   FOLLY_ALWAYS_INLINE void call(int64_t& result, const arg_type<Date>& date) {
-    result = getWeek(getDateTime(date));
+    result = getWeek(Timestamp::fromDaysAndNanos(date, 0), nullptr);
   }
 
   FOLLY_ALWAYS_INLINE void call(
       int64_t& result,
       const arg_type<TimestampWithTimezone>& timestampWithTimezone) {
     auto timestamp = this->toTimestamp(timestampWithTimezone);
-    result = getWeek(getDateTime(timestamp, nullptr));
+    result = getWeek(timestamp, nullptr);
   }
 };
 
