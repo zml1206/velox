@@ -35,6 +35,17 @@ Timestamp Timestamp::fromDaysAndNanos(int32_t days, int64_t nanos) {
 }
 
 // static
+Timestamp Timestamp::fromUnixDaysAndNanos(int32_t days, int64_t nanos) {
+  int64_t seconds = days * kSecondsInDay + nanos / kNanosInSecond;
+  int64_t remainingNanos = nanos % kNanosInSecond;
+  if (remainingNanos < 0) {
+    remainingNanos += kNanosInSecond;
+    seconds--;
+  }
+  return Timestamp(seconds, remainingNanos);
+}
+
+// static
 Timestamp Timestamp::now() {
   auto now = std::chrono::system_clock::now();
   auto epochMs = std::chrono::duration_cast<std::chrono::milliseconds>(

@@ -51,11 +51,11 @@ struct WeekFunction : public InitSessionTimezone<T> {
   FOLLY_ALWAYS_INLINE void call(
       int32_t& result,
       const arg_type<Timestamp>& timestamp) {
-    result = getWeek(timestamp, this->timeZone_);
+    result = getWeek(timestamp, this->timeZone_, false);
   }
 
   FOLLY_ALWAYS_INLINE void call(int32_t& result, const arg_type<Date>& date) {
-    result = getWeek(Timestamp::fromDaysAndNanos(date, 0), nullptr);
+    result = getWeek(Timestamp::fromUnixDaysAndNanos(date, 0), nullptr, false);
   }
 };
 

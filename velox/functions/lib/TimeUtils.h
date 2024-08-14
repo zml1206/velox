@@ -94,12 +94,15 @@ FOLLY_ALWAYS_INLINE int32_t getDayOfYear(const std::tm& time) {
   return time.tm_yday + 1;
 }
 
-FOLLY_ALWAYS_INLINE int getWeek(const Timestamp& timestamp, const tz::TimeZone* timezone) {
+FOLLY_ALWAYS_INLINE unsigned getWeek(
+    const Timestamp& timestamp,
+    const tz::TimeZone* timezone,
+    bool allowOverflow) {
   Timestamp t = timestamp;
-  if (timezone != nullptr) {
+  if (timezone) {
     t.toTimezone(*timezone);
   }
-  const auto timePoint = t.toTimePointMs(false);
+  const auto timePoint = t.toTimePointMs(allowOverflow);
   const auto daysTimePoint = date::floor<date::days>(timePoint);
   const date::year_month_day calDate(daysTimePoint);
   auto weekNum = date::iso_week::year_weeknum_weekday{calDate}.weeknum();
