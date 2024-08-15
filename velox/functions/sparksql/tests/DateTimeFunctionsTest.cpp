@@ -209,7 +209,7 @@ TEST_F(DateTimeFunctionsTest, weekOfYear) {
 
   // Test various cases where the last week of the previous year extends into
   // the next year.
-  
+
   // Leap year that ends on Thursday.
   EXPECT_EQ(53, weekOfYear("2021-01-01"));
   // Leap year that ends on Friday.

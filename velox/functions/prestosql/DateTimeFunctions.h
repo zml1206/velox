@@ -203,7 +203,7 @@ struct WeekFunction : public InitSessionTimezone<T>,
   }
 
   FOLLY_ALWAYS_INLINE void call(int64_t& result, const arg_type<Date>& date) {
-    result = getWeek(Timestamp::fromUnixDaysAndNanos(date, 0), nullptr, false);
+    result = getWeek(Timestamp(date * kSecondsInDay, 0), nullptr, false);
   }
 
   FOLLY_ALWAYS_INLINE void call(

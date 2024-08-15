@@ -113,13 +113,9 @@ struct Timestamp {
     VELOX_USER_DCHECK_LE(nanos, kMaxNanos, "Timestamp nanos out of range");
   }
 
-  // Creates a timestamp from the number of days since the Julian epoch
-  // and the number of nanoseconds.
+  /// Creates a timestamp from the number of days since the Julian epoch
+  /// and the number of nanoseconds.
   static Timestamp fromDaysAndNanos(int32_t days, int64_t nanos);
-
-  // Creates a timestamp from the number of days since the Unix epoch
-  // and the number of nanoseconds.
-  static Timestamp fromUnixDaysAndNanos(int32_t days, int64_t nanos);
 
   // Returns the current unix timestamp (ms precision).
   static Timestamp now();
