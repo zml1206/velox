@@ -648,14 +648,8 @@ TEST_F(ParquetReaderTest, parseIntDecimal) {
   rowReader->next(6, result);
   EXPECT_EQ(result->size(), 6ULL);
   auto decimals = result->as<RowVector>();
-  auto a = decimals->childAt(0)
-               ->loadedVector()
-               ->asFlatVector<int64_t>()
-               ->rawValues();
-  auto b = decimals->childAt(1)
-               ->loadedVector()
-               ->asFlatVector<int64_t>()
-               ->rawValues();
+  auto a = decimals->childAt(0)->asFlatVector<int64_t>()->rawValues();
+  auto b = decimals->childAt(1)->asFlatVector<int64_t>()->rawValues();
   for (int i = 0; i < 3; i++) {
     int index = 2 * i;
     EXPECT_EQ(a[index], expectValues[i]);
@@ -758,8 +752,7 @@ TEST_F(ParquetReaderTest, parseRowArrayTest) {
 
   ASSERT_TRUE(rowReader->next(1, result));
   // data: 10, 9, <empty>, null, {9}, 2 elements starting at 0 {{9}, {10}}}
-  auto structArray =
-      result->as<RowVector>()->childAt(5)->loadedVector()->as<ArrayVector>();
+  auto structArray = result->as<RowVector>()->childAt(5)->as<ArrayVector>();
   auto structEle = structArray->elements()
                        ->as<RowVector>()
                        ->childAt(0)
@@ -1205,11 +1198,8 @@ TEST_F(ParquetReaderTest, readVarbinaryFromFLBA) {
   rowReader->next(1, result);
   EXPECT_EQ(
       expected,
-      result->as<RowVector>()
-          ->childAt(0)
-          ->loadedVector()
-          ->asFlatVector<StringView>()
-          ->valueAt(0));
+      result->as<RowVector>()->childAt(0)->asFlatVector<StringView>()->valueAt(
+          0));
 }
 
 TEST_F(ParquetReaderTest, readBinaryAsStringFromNation) {
@@ -1236,11 +1226,10 @@ TEST_F(ParquetReaderTest, readBinaryAsStringFromNation) {
   auto expected = std::string("ALGERIA");
   VectorPtr result = BaseVector::create(outputRowType, 0, &(*leafPool_));
   rowReader->next(1, result);
-  auto nameVector = result->as<RowVector>()->childAt(1);
-  ASSERT_TRUE(isLazyNotLoaded(*nameVector));
   EXPECT_EQ(
       expected,
-      nameVector->loadedVector()->asFlatVector<StringView>()->valueAt(0));
+      result->as<RowVector>()->childAt(1)->asFlatVector<StringView>()->valueAt(
+          0));
 }
 
 TEST_F(ParquetReaderTest, readComplexType) {
@@ -1312,11 +1301,10 @@ TEST_F(ParquetReaderTest, readFixedLenBinaryAsStringFromUuid) {
   auto expected = std::string("5468454a-363f-ccc8-7d0b-76072a75dfaa");
   VectorPtr result = BaseVector::create(outputRowType, 0, &(*leafPool_));
   rowReader->next(1, result);
-  auto uuidVector = result->as<RowVector>()->childAt(0);
-  ASSERT_TRUE(isLazyNotLoaded(*uuidVector));
   EXPECT_EQ(
       expected,
-      uuidVector->loadedVector()->asFlatVector<StringView>()->valueAt(0));
+      result->as<RowVector>()->childAt(0)->asFlatVector<StringView>()->valueAt(
+          0));
 }
 
 TEST_F(ParquetReaderTest, testV2PageWithZeroMaxDefRep) {
@@ -1511,11 +1499,9 @@ TEST_F(ParquetReaderTest, testLzoDataPage) {
   VectorPtr result = BaseVector::create(outputRowType, 0, &*leafPool_);
   rowReader->next(23'547ULL, result);
   EXPECT_EQ(23'547ULL, result->size());
-  auto* rowVector = result->asUnchecked<RowVector>();
-  auto* values =
-      rowVector->childAt(0)->loadedVector()->asUnchecked<RowVector>();
-  auto* intField = values->childAt(0)->loadedVector()->asFlatVector<int32_t>();
-  auto* stringArray = values->childAt(1)->loadedVector()->as<ArrayVector>();
+  auto values = result->as<RowVector>()->childAt(0)->as<RowVector>();
+  auto intField = values->childAt(0)->asFlatVector<int32_t>();
+  auto stringArray = values->childAt(1)->as<ArrayVector>();
   EXPECT_EQ(intField->valueAt(0), 1);
   EXPECT_EQ(intField->valueAt(23'546), 13);
   EXPECT_EQ(

@@ -204,11 +204,6 @@ class DirectDecoder : public IntDecoder<isSigned> {
           return;
         }
       }
-      if (hasHook && visitor.numValuesBias() > 0) {
-        for (auto& row : *outerVector) {
-          row += visitor.numValuesBias();
-        }
-      }
       if (super::useVInts_) {
         if (Visitor::dense) {
           super::bulkRead(numNonNull, data);
@@ -259,10 +254,7 @@ class DirectDecoder : public IntDecoder<isSigned> {
                 rowsAsRange,
                 0,
                 rowsAsRange.size(),
-                hasHook ? velox::iota(
-                              numRows,
-                              visitor.innerNonNullRows(),
-                              visitor.numValuesBias())
+                hasHook ? velox::iota(numRows, visitor.innerNonNullRows())
                         : nullptr,
                 visitor.rawValues(numRows),
                 hasFilter ? visitor.outputRows(numRows) : nullptr,
@@ -272,10 +264,7 @@ class DirectDecoder : public IntDecoder<isSigned> {
       } else {
         dwio::common::fixedWidthScan<T, filterOnly, false>(
             rowsAsRange,
-            hasHook ? velox::iota(
-                          numRows,
-                          visitor.innerNonNullRows(),
-                          visitor.numValuesBias())
+            hasHook ? velox::iota(numRows, visitor.innerNonNullRows())
                     : nullptr,
             visitor.rawValues(numRows),
             hasFilter ? visitor.outputRows(numRows) : nullptr,

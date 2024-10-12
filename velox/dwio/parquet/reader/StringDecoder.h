@@ -43,7 +43,6 @@ class StringDecoder {
   template <bool hasNulls, typename Visitor>
   void readWithVisitor(const uint64_t* nulls, Visitor visitor) {
     int32_t current = visitor.start();
-    int32_t numValues = 0;
     skip<hasNulls>(current, 0, nulls);
     int32_t toSkip;
     bool atEnd = false;
@@ -58,10 +57,6 @@ class StringDecoder {
             skip<false>(toSkip, current, nullptr);
           }
           if (atEnd) {
-            if constexpr (Visitor::kHasHook) {
-              visitor.setNumValues(
-                  Visitor::kHasFilter ? numValues : visitor.numRows());
-            }
             return;
           }
         }
@@ -71,16 +66,11 @@ class StringDecoder {
             fixedLength_ > 0 ? readFixedString() : readString(), atEnd);
       }
       ++current;
-      ++numValues;
       if (toSkip) {
         skip<hasNulls>(toSkip, current, nulls);
         current += toSkip;
       }
       if (atEnd) {
-        if constexpr (Visitor::kHasHook) {
-          visitor.setNumValues(
-              Visitor::kHasFilter ? numValues : visitor.numRows());
-        }
         return;
       }
     }

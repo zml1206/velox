@@ -322,9 +322,10 @@ void fixedWidthScan(
                 }
                 if (!hasFilter) {
                   if (hasHook) {
-                    T values2[values.size];
-                    values.store_unaligned(values2);
-                    hook.addValues(scatterRows + rowIndex, values2, width);
+                    hook.addValues(
+                        scatterRows + rowIndex,
+                        reinterpret_cast<T*>(&values),
+                        width);
                   } else {
                     if (scatter) {
                       scatterDense<T>(

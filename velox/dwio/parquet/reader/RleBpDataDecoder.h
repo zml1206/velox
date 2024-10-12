@@ -114,11 +114,6 @@ class RleBpDataDecoder : public facebook::velox::parquet::RleBpDecoder {
           visitor.setAllNull(hasFilter ? 0 : numRows);
           return;
         }
-        if (hasHook && visitor.numValuesBias() > 0) {
-          for (auto& row : *outerVector) {
-            row += visitor.numValuesBias();
-          }
-        }
         bulkScan<hasFilter, hasHook, true>(
             folly::Range<const int32_t*>(rows, outerVector->size()),
             outerVector->data(),
@@ -142,11 +137,6 @@ class RleBpDataDecoder : public facebook::velox::parquet::RleBpDecoder {
           skip<false>(tailSkip, 0, nullptr);
           visitor.setAllNull(hasFilter ? 0 : numRows);
           return;
-        }
-        if (hasHook && visitor.numValuesBias() > 0) {
-          for (auto& row : *outerVector) {
-            row += visitor.numValuesBias();
-          }
         }
         bulkScan<hasFilter, hasHook, true>(
             *innerVector, outerVector->data(), visitor);
