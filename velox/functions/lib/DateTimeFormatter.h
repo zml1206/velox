@@ -115,6 +115,19 @@ enum class DateTimeFormatSpecifier : uint8_t {
   LITERAL_PERCENT = 23
 };
 
+enum class DateTimeUnit {
+  kMicrosecond,
+  kMillisecond,
+  kSecond,
+  kMinute,
+  kHour,
+  kDay,
+  kWeek,
+  kMonth,
+  kQuarter,
+  kYear
+};
+
 struct FormatPattern {
   DateTimeFormatSpecifier specifier;
 

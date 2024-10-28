@@ -20,6 +20,7 @@
 
 #include "velox/common/base/Doubles.h"
 #include "velox/external/date/date.h"
+#include "velox/functions/lib/DateTimeFormatter.h"
 #include "velox/functions/prestosql/types/TimestampWithTimeZoneType.h"
 #include "velox/type/Timestamp.h"
 #include "velox/type/TimestampConversion.h"
@@ -64,20 +65,6 @@ FOLLY_ALWAYS_INLINE Timestamp fromUnixtime(double unixtime) {
   }
   return Timestamp(seconds, milliseconds * kNanosecondsInMillisecond);
 }
-
-namespace {
-enum class DateTimeUnit {
-  kMillisecond,
-  kSecond,
-  kMinute,
-  kHour,
-  kDay,
-  kWeek,
-  kMonth,
-  kQuarter,
-  kYear
-};
-} // namespace
 
 // Year, quarter or month are not uniformly incremented. Months have different
 // total days, and leap years have more days than the rest. If the new year,
