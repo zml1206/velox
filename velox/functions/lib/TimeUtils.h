@@ -287,7 +287,7 @@ adjustEpoch(int64_t seconds, int64_t intervalSeconds) {
 // Returns timestamp truncated to the unit specified by the format.
 FOLLY_ALWAYS_INLINE Timestamp dateTrunc(
     const DateTimeUnit unit,
-    Timestamp& timestamp,
+    const Timestamp& timestamp,
     const tz::TimeZone* timeZone) {
   Timestamp result;
   switch (unit) {
