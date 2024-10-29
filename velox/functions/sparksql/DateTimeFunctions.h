@@ -507,7 +507,7 @@ struct DateTruncFunction {
       return false;
     }
     DateTimeUnit unit = unitOption.value();
-    result = dateTrunc(unit, timestamp, timezone_);
+    result = dateTrunc(unit, timestamp, timeZone_);
     return true;
   }
 };
