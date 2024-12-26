@@ -404,6 +404,8 @@ void registerFunctions(
 
   registerFunction<DateTruncFunction, Timestamp, Varchar, Timestamp>(
       {prefix + "date_trunc"});
+  registerFunction<DateTruncFunction, Date, Varchar, Date>(
+      {prefix + "date_trunc"});
 
   registerFunction<DateAddFunction, Date, Date, int8_t>({prefix + "date_add"});
   registerFunction<DateAddFunction, Date, Date, int16_t>({prefix + "date_add"});
