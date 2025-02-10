@@ -59,6 +59,8 @@ void registerDatetimeFunctions(const std::string& prefix) {
   registerFunction<DateSubFunction, Date, Date, int32_t>({prefix + "date_sub"});
   registerFunction<DateTruncFunction, Timestamp, Varchar, Timestamp>(
       {prefix + "date_trunc"});
+  registerFunction<DateTruncFunction, Date, Varchar, Date>(
+      {prefix + "date_trunc"});
   registerFunction<DayFunction, int32_t, Date>(
       {prefix + "day", prefix + "dayofmonth"});
   registerFunction<DayOfYearFunction, int32_t, Date>(
